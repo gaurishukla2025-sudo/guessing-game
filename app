@@ -1,22 +1,31 @@
 import streamlit as st
 import random
 
-st.title("🎯 Simple Guessing Game")
+st.title("🎯 Number Guessing Game")
 
-# Create the secret number once per session
-if "secret" not in st.session_state:
-    st.session_state.secret = random.randint(1, 50)
+# Initialize the random number only once per session
+if "secret_number" not in st.session_state:
+    st.session_state.secret_number = random.randint(1, 100)
+    st.session_state.attempts = 0
 
-guess = st.number_input("Guess a number between 1 and 50:", min_value=1, max_value=50)
+st.write("I'm thinking of a number between 1 and 100. Try to guess it!")
 
-if st.button("Check Guess"):
-    if guess < st.session_state.secret:
-        st.write("🔼 Too low!")
-    elif guess > st.session_state.secret:
-        st.write("🔽 Too high!")
+guess = st.number_input("Enter your guess:", min_value=1, max_value=100, step=1)
+guess_button = st.button("Guess")
+
+if guess_button:
+    st.session_state.attempts += 1
+    
+    if guess < st.session_state.secret_number:
+        st.warning("Too low! Try again.")
+    elif guess > st.session_state.secret_number:
+        st.warning("Too high! Try again.")
     else:
-        st.write("🎉 Correct! You guessed it!")
+        st.success(f"🎉 Correct! The number was {st.session_state.secret_number}.")
+        st.success(f"You guessed it in {st.session_state.attempts} attempts!")
 
-if st.button("New Game"):
-    st.session_state.secret = random.randint(1, 50)
-    st.write("🔄 New number generated!")
+        # Reset button
+        if st.button("Play Again"):
+            st.session_state.secret_number = random.randint(1, 100)
+            st.session_state.attempts = 0
+            st.experimental_rerun()
